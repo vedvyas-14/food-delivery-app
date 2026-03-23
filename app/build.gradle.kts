@@ -5,11 +5,15 @@ plugins {
 
 android {
     namespace = "com.example.fooddeliveryapp"
+
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
         }
     }
+
+    val apiKey = project.findProperty("GEO_API_KEY")?.toString()
+        ?: throw GradleException("GEO_API_KEY not found")
 
     defaultConfig {
         applicationId = "com.example.fooddeliveryapp"
@@ -19,6 +23,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "GEO_API_KEY", "\"$apiKey\"")
     }
 
     buildTypes {
@@ -30,12 +36,15 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

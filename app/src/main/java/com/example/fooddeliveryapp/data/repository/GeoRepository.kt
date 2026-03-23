@@ -5,7 +5,9 @@ import com.example.fooddeliveryapp.data.api.GeoApiClient
 import com.example.fooddeliveryapp.data.api.GeoApiClient.api
 import com.example.fooddeliveryapp.data.api.GeoApiService
 import com.example.fooddeliveryapp.data.model.GeoResponseItem
+import com.example.fooddeliveryapp.BuildConfig
 import com.example.fooddeliveryapp.utils.Constants
+
 
 
 class GeoRepository(
@@ -17,7 +19,7 @@ class GeoRepository(
         return try {
             val response = api.getCoordinates(
                 city = city,
-                apiKey = Constants.GEO_API_KEY
+                apiKey = BuildConfig.GEO_API_KEY
             )
             if (response.isNotEmpty()) {
                 GeoResult.Success(response[0])
@@ -38,7 +40,7 @@ class GeoRepository(
             val response = GeoApiClient.api.getAddressFromCoordinates(
                 lat = lat,
                 lon = lon,
-                apiKey = Constants.GEO_API_KEY
+                apiKey = BuildConfig.GEO_API_KEY
             )
 
             if (response.isNotEmpty()) {
