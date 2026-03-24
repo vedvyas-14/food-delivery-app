@@ -2,6 +2,7 @@ package com.example.fooddeliveryapp.data.model.parser
 
 import com.example.fooddeliveryapp.data.model.MenuCategory
 import com.example.fooddeliveryapp.data.model.MenuItem
+import com.example.fooddeliveryapp.utils.Constants.IMAGE_BASE_URL
 import org.json.JSONObject
 
 object MenuParser {
@@ -68,6 +69,12 @@ object MenuParser {
 
                         val imageId = info.optString("imageId")
 
+                        val imageUrl = when {
+                            imageId.isNullOrEmpty() -> ""
+                            imageId.startsWith("http") -> imageId
+                            else -> IMAGE_BASE_URL + imageId
+                        }
+
                         val vegClassifier = info
                             .optJSONObject("itemAttribute")
                             ?.optString("vegClassifier", "NONVEG")
@@ -84,7 +91,7 @@ object MenuParser {
                                 name = name,
                                 price = price,
                                 description = description,
-                                imageId = imageId,
+                                imageUrl = imageUrl,
                                 isVeg = isVeg
                             )
                         )

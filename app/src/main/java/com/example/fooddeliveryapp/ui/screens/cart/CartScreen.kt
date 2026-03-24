@@ -11,6 +11,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -25,8 +26,11 @@ fun CartScreen(
     cartViewModel: CartViewModel
 ) {
 
-    val cartItems = cartViewModel.cartItems
-    val totalPrice = cartViewModel.getTotalPrice()
+    val state = cartViewModel.state.collectAsState().value
+
+    val cartItems = state.items
+    val totalPrice = state.totalPrice
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -143,7 +147,8 @@ fun CartScreen(
                                                 cartViewModel.addItem(
                                                     item.id,
                                                     item.name,
-                                                    item.price
+                                                    item.price,
+                                                    item.imageUrl
                                                 )
                                             }
                                             .padding(horizontal = 8.dp),

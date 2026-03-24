@@ -1,63 +1,66 @@
 package com.example.fooddeliveryapp.viewmodel
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.fooddeliveryapp.data.model.CartItem
+import com.example.fooddeliveryapp.data.repository.CartRepository
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
-class CartViewModel : ViewModel() {
+data class CartUiState(
+    val items: List<CartItem> = emptyList(),
+    val totalPrice: Double = 0.0,
+    val totalItems: Int = 0
+)
 
-    var cartItems = mutableStateListOf<CartItem>()
-        private set
+class CartViewModel(
+    private val repository: CartRepository
+) : ViewModel() {
 
-    fun addItem(id: String, name: String, price: Double) {
+    private val _state = MutableStateFlow(CartUiState())
+    val state: StateFlow<CartUiState> = _state
 
-        val existingItem = cartItems.find { it.id == id }
+    init {
+        viewModelScope.launch {
+            repository.cartItems.collect { items ->
 
-        if (existingItem != null) {
-            cartItems.replaceAll {
-                if (it.id == id) {
-                    it.copy(quantity = it.quantity + 1)
-                } else it
-            }
-        } else {
-            cartItems.add(
-                CartItem(
-                    id = id,
-                    name = name,
-                    price = price,
-                    quantity = 1
+                _state.value = CartUiState(
+                    items = items,
+                    totalPrice = items.sumOf { it.price * it.quantity },
+                    totalItems = items.sumOf { it.quantity }
                 )
+            }
+        }
+    }
+
+    fun addItem(
+        id: String,
+        name: String,
+        price: Double,
+        imageUrl: String
+    ) {
+        viewModelScope.launch {
+            repository.addItem(
+                CartItem(id, name, price, 1, imageUrl)
             )
         }
     }
 
     fun removeItem(id: String) {
-
-        val existingItem = cartItems.find { it.id == id }
-
-        if (existingItem != null) {
-
-            if (existingItem.quantity > 1) {
-                cartItems.replaceAll {
-                    if (it.id == id) {
-                        it.copy(quantity = it.quantity - 1)
-                    } else it
-                }
-            } else {
-                cartItems.remove(existingItem)
-            }
+        viewModelScope.launch {
+            repository.removeItem(id)
         }
     }
 
     fun removeItemCompletely(id: String) {
-        cartItems.removeAll { it.id == id }
+        viewModelScope.launch {
+            repository.removeItemCompletely(id)
+        }
     }
 
-    fun getTotalPrice(): Double {
-        return cartItems.sumOf { it.price * it.quantity }
-    }
-
-    fun getTotalItems(): Int {
-        return cartItems.sumOf { it.quantity }
+    fun clearCart() {
+        viewModelScope.launch {
+            repository.clearCart()
+        }
     }
 }

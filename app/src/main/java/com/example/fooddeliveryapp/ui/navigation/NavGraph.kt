@@ -1,13 +1,18 @@
 package com.example.fooddeliveryapp.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.*
+import com.example.fooddeliveryapp.data.local.db.DatabaseProvider
 import com.example.fooddeliveryapp.data.model.Restaurant
+import com.example.fooddeliveryapp.data.repository.CartRepository
 import com.example.fooddeliveryapp.ui.screens.HomeScreen
 import com.example.fooddeliveryapp.ui.screens.cart.CartScreen
 import com.example.fooddeliveryapp.ui.screens.menu.RestaurantMenuScreen
 import com.example.fooddeliveryapp.viewmodel.CartViewModel
+import com.example.fooddeliveryapp.viewmodel.CartViewModelFactory
 import com.example.fooddeliveryapp.viewmodel.RestaurantViewModel
 
 @Composable
@@ -18,8 +23,24 @@ fun NavGraph(
 
 //    val viewModel: RestaurantViewModel = viewModel()
     val navController = rememberNavController()
-    val cartViewModel: CartViewModel = viewModel()
+
     //val restaurant = viewModel.getRestaurantById(restaurantId)
+
+    val context = LocalContext.current
+
+    val db = remember {
+        DatabaseProvider.getDatabase(context.applicationContext)
+    }
+
+    val repository = remember {
+        CartRepository(db.cartDao())
+    }
+
+    val factory = remember {
+        CartViewModelFactory(repository)
+    }
+
+    val cartViewModel: CartViewModel = viewModel(factory = factory)
 
     NavHost(
         navController = navController,

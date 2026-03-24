@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -22,11 +23,9 @@ fun FoodItemCard(
     cartViewModel: CartViewModel
 ) {
 
-    val cartItem by remember(cartViewModel.cartItems) {
-        derivedStateOf {
-            cartViewModel.cartItems.find { it.id == item.id }
-        }
-    }
+
+    val state = cartViewModel.state.collectAsState().value
+    val cartItem = state.items.find { it.id == item.id }
 
     Card(
         modifier = Modifier
@@ -101,7 +100,8 @@ fun FoodItemCard(
                                 cartViewModel.addItem(
                                     id = item.id,
                                     name = item.name,
-                                    price = item.price.toDouble()
+                                    price = item.price.toDouble(),
+                                    imageUrl = item.imageUrl
                                 )
                             }
                             .padding(horizontal = 16.dp, vertical = 6.dp)
@@ -135,10 +135,11 @@ fun FoodItemCard(
                             modifier = Modifier
                                 .clickable {
                                     cartViewModel.addItem(
-                                        item.id,
-                                        item.name,
-                                        item.price.toDouble()
-                                    )
+                                    id = item.id,
+                                    name = item.name,
+                                    price = item.price.toDouble(),
+                                    imageUrl = item.imageUrl
+                                )
                                 }
                                 .padding(8.dp)
                         )

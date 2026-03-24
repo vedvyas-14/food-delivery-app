@@ -9,6 +9,6 @@ data class MenuItem(
     val name: String,
     val price: Int,
     val description: String?,
-    val imageId: String?,
+    val imageUrl: String,
     val isVeg: Boolean
 )
